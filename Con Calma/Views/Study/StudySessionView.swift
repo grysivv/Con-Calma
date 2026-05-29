@@ -150,9 +150,11 @@ struct StudySessionView: View {
 
             if quality != .again {
                 let todayStr = DateFormatter.yyyyMMdd.string(from: Date())
-                let descriptor = FetchDescriptor<DailyActivity>()
+                // performance hack: predykat i fetchLimit = 1 aby uniknąć ładowania wszystkich rekordów bazy w poszukiwaniu jednego
+                var descriptor = FetchDescriptor<DailyActivity>(predicate: #Predicate { $0.dateString == todayStr })
+                descriptor.fetchLimit = 1
                 if let activities = try? modelContext.fetch(descriptor) {
-                    if let todayActivity = activities.first(where: { $0.dateString == todayStr }) {
+                    if let todayActivity = activities.first {
                         todayActivity.count += 1
                     } else {
                         let newActivity = DailyActivity(dateString: todayStr, count: 1)
@@ -176,9 +178,11 @@ struct StudySessionView: View {
     private func saveStudyTime() {
         guard sessionTime > 0 else { return }
         let todayStr = DateFormatter.yyyyMMdd.string(from: Date())
-        let descriptor = FetchDescriptor<DailyActivity>()
+        // performance hack: predykat i fetchLimit = 1 zapobiega problemom pamięciowym przy dużej ilości dni
+        var descriptor = FetchDescriptor<DailyActivity>(predicate: #Predicate { $0.dateString == todayStr })
+        descriptor.fetchLimit = 1
         if let activities = try? modelContext.fetch(descriptor) {
-            if let todayActivity = activities.first(where: { $0.dateString == todayStr }) {
+            if let todayActivity = activities.first {
                 todayActivity.studyTime += sessionTime
             } else {
                 let newActivity = DailyActivity(dateString: todayStr, count: 0, studyTime: sessionTime)

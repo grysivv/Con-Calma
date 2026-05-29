@@ -192,7 +192,10 @@ struct DashboardView: View {
 
         let allActDescriptor = FetchDescriptor<DailyActivity>()
         if let allActivities = try? modelContext.fetch(allActDescriptor) {
-            let activityDict = Dictionary(uniqueKeysWithValues: allActivities.map { ($0.dateString, $0) })
+            // performance hack: użycie reduce(into:) zamiast map+Dictionary unika alokacji tymczasowej tablicy krotek (O(N) pamięciowo optymalne)
+            let activityDict = allActivities.reduce(into: [String: DailyActivity]()) { dict, activity in
+                dict[activity.dateString] = activity
+            }
 
             todayCount = activityDict[todayStr]?.count ?? 0
             todayStudyTime = activityDict[todayStr]?.studyTime ?? 0.0
