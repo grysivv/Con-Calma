@@ -1,32 +1,50 @@
-//
-//  Con_CalmaApp.swift
-//  Con Calma
-//
-//  Created by Daniel Gryś on 29/05/2026.
-//
-
 import SwiftUI
 import SwiftData
 
 @main
 struct Con_CalmaApp: App {
+    // Inicjalizujemy globalnego managera głosu
+    @State private var speechManager = SpeechManager()
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            Flashcard.self,
+            DailyActivity.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+            fatalError("Nie można utworzyć ModelContainer: \(error)")
         }
     }()
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainTabView()
+                // Udostępniamy manager mowy dla całego drzewa widoków
+                .environment(speechManager)
         }
         .modelContainer(sharedModelContainer)
+    }
+}
+
+struct MainTabView: View {
+    var body: some View {
+        TabView {
+            DashboardView()
+                .tabItem { Label("Dashboard", systemImage: "square.grid.2x2.fill") }
+
+            LibraryView()
+                .tabItem { Label("Kolekcja", systemImage: "rectangle.stack.fill") }
+
+            StatisticsView()
+                .tabItem { Label("Statystyki", systemImage: "chart.bar.fill") }
+
+            SettingsView()
+                .tabItem { Label("Ustawienia", systemImage: "gearshape.fill") }
+        }
+        .tint(.primary)
     }
 }

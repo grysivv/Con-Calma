@@ -50,11 +50,15 @@
 		};
 		A2E22A7E2FC9D96D00325CB1 /* Con CalmaTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = "Con CalmaTests";
 			sourceTree = "<group>";
 		};
 		A2E22A882FC9D96D00325CB1 /* Con CalmaUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = "Con CalmaUITests";
 			sourceTree = "<group>";
 		};
@@ -124,8 +128,6 @@
 				A2E22A6C2FC9D96C00325CB1 /* Con Calma */,
 			);
 			name = "Con Calma";
-			packageProductDependencies = (
-			);
 			productName = "Con Calma";
 			productReference = A2E22A6A2FC9D96C00325CB1 /* Con Calma.app */;
 			productType = "com.apple.product-type.application";
@@ -147,8 +149,6 @@
 				A2E22A7E2FC9D96D00325CB1 /* Con CalmaTests */,
 			);
 			name = "Con CalmaTests";
-			packageProductDependencies = (
-			);
 			productName = "Con CalmaTests";
 			productReference = A2E22A7B2FC9D96D00325CB1 /* Con CalmaTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -170,8 +170,6 @@
 				A2E22A882FC9D96D00325CB1 /* Con CalmaUITests */,
 			);
 			name = "Con CalmaUITests";
-			packageProductDependencies = (
-			);
 			productName = "Con CalmaUITests";
 			productReference = A2E22A852FC9D96D00325CB1 /* Con CalmaUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
