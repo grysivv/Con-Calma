@@ -1,9 +1,7 @@
-//
 //  ContentView.swift
 //  Con Calma
-//
 //  Created by Daniel Gryś on 29/05/2026.
-//
+
 
 import SwiftUI
 import SwiftData
