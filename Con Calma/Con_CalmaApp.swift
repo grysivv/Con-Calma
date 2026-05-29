@@ -36,6 +36,9 @@ struct MainTabView: View {
             DashboardView()
                 .tabItem { Label("Dashboard", systemImage: "square.grid.2x2.fill") }
 
+            LessonsView()
+                .tabItem { Label("Lekcje", systemImage: "book.fill") }
+
             LibraryView()
                 .tabItem { Label("Kolekcja", systemImage: "rectangle.stack.fill") }
 

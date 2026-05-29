@@ -12,15 +12,25 @@ struct SRSAlgorithm {
 
         switch quality {
         case .again:
-            card.repetitions = 0
-            card.interval = 0
+            if card.interval > 8 {
+                card.interval = 1
+                card.easeFactor = max(1.3, card.easeFactor * 0.75)
+            } else {
+                card.repetitions = 0
+                card.interval = 0
+            }
             // Celowe wymuszenie daty z przeszłości, aby po wyjściu z sesji i wejściu
             // z powrotem słówko NATYCHMIAST pojawiło się ponownie w puli "Do powtórki",
             // nawet jeśli aplikacja zapamiętała `Date()` ze startu widoku.
             card.nextReviewDate = Calendar.current.date(byAdding: .day, value: -1, to: now) ?? now
 
         case .hard:
-            card.interval = 1
+            if card.interval > 8 {
+                card.interval = 1
+                card.easeFactor = max(1.3, card.easeFactor * 0.75)
+            } else {
+                card.interval = 1
+            }
             card.nextReviewDate = Calendar.current.date(byAdding: .day, value: 1, to: now) ?? now
 
         case .good:
