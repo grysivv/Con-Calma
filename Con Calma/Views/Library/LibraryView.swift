@@ -27,30 +27,36 @@ struct LibraryView: View {
     }
 
     var filteredCards: [Flashcard] {
-        var result = allCards
+        // performance hack: pojedyncze filtrowanie przez wszystkie warunki O(N) zamiast wielokrotnych przebiegów O(k*N)
+        return allCards.filter { card in
+            var isMatch = true
 
-        if !searchText.isEmpty {
-            result = result.filter { $0.front.localizedCaseInsensitiveContains(searchText) || $0.back.localizedCaseInsensitiveContains(searchText) }
+            if !searchText.isEmpty {
+                isMatch = isMatch && (card.front.localizedCaseInsensitiveContains(searchText) || card.back.localizedCaseInsensitiveContains(searchText))
+            }
+
+            if isMatch {
+                switch selectedTab {
+                case .known:
+                    isMatch = isMatch && card.repetitions > 0
+                case .unknown:
+                    isMatch = isMatch && card.repetitions == 0
+                case .all:
+                    break
+                }
+            }
+
+            if isMatch && selectedCategory != "Wszystkie" {
+                isMatch = isMatch && card.category == selectedCategory
+            }
+
+            if isMatch && mustHaveContext {
+                let ex = card.example ?? ""
+                isMatch = isMatch && !ex.isEmpty
+            }
+
+            return isMatch
         }
-
-        switch selectedTab {
-        case .known:
-            result = result.filter { $0.repetitions > 0 }
-        case .unknown:
-            result = result.filter { $0.repetitions == 0 }
-        case .all:
-            break
-        }
-
-        if selectedCategory != "Wszystkie" {
-            result = result.filter { $0.category == selectedCategory }
-        }
-
-        if mustHaveContext {
-            result = result.filter { let ex = $0.example ?? ""; return !ex.isEmpty }
-        }
-
-        return result
     }
 
     var body: some View {
