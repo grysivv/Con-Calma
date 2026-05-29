@@ -184,12 +184,24 @@ struct AddFlashcardView: View {
     }
 
     // Zmodyfikowana funkcja! Zachowuje spacje i apostrofy (ważne dla rodzajników)
+    @MainActor
     private func normalize(_ string: String) -> String {
+        struct NormalizationCache {
+            static let cache = NSCache<NSString, NSString>()
+        }
+
+        if let cached = NormalizationCache.cache.object(forKey: string as NSString) {
+            return cached as String // performance hack: cache normalization results
+        }
+
         var clean = string.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
         let charsToRemove: Set<Character> = [".", ",", "!", "?", ";", ":"]
         clean.removeAll(where: { charsToRemove.contains($0) })
         // Spłaszcza podwójne/potrójne spacje (jeśli wpiszesz przez przypadek) do jednej
-        return clean.replacingOccurrences(of: " +", with: " ", options: .regularExpression)
+        let result = clean.replacingOccurrences(of: " +", with: " ", options: .regularExpression)
+
+        NormalizationCache.cache.setObject(result as NSString, forKey: string as NSString)
+        return result
     }
 
     var duplicateStatus: DuplicateStatus {
