@@ -11,9 +11,9 @@ struct FlashcardView: View {
         ZStack {
             Group {
                 if showPolishOnFront {
-                    CardFace(text: card.back, subtitle: "Polski", example: card.example, isItalian: false)
+                    CardFace(text: card.back, subtitle: "Polski", isItalian: false)
                 } else {
-                    CardFace(text: card.front, subtitle: "Włoski", isItalian: true, actionSpeech: {
+                    CardFace(text: card.front, subtitle: "Włoski", example: card.example, isItalian: true, actionSpeech: {
                         speechManager.speak(card.front)
                     })
                 }
@@ -23,11 +23,11 @@ struct FlashcardView: View {
 
             Group {
                 if showPolishOnFront {
-                    CardFace(text: card.front, subtitle: "Włoski", isItalian: true, actionSpeech: {
+                    CardFace(text: card.front, subtitle: "Włoski", example: card.example, isItalian: true, actionSpeech: {
                         speechManager.speak(card.front)
                     })
                 } else {
-                    CardFace(text: card.back, subtitle: "Polski", example: card.example, isItalian: false)
+                    CardFace(text: card.back, subtitle: "Polski", isItalian: false)
                 }
             }
             .opacity(isFlipped ? 1 : 0)
