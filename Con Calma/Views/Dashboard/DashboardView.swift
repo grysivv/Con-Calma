@@ -21,7 +21,8 @@ struct DashboardView: View {
 
     var dueCards: [Flashcard] {
         let now = Date()
-        return allCards.filter { $0.nextReviewDate <= now }.sorted { $0.nextReviewDate < $1.nextReviewDate }
+        // Pobierz fiszki, których termin minął, ORAZ te, które są trudne (niezależnie od daty)
+        return allCards.filter { $0.nextReviewDate <= now || $0.easeFactor < 1.4 }
     }
 
     @AppStorage("dailyGoal") private var dailyGoal: Int = 15
@@ -66,31 +67,29 @@ struct DashboardView: View {
                                 .foregroundColor(.accentColor.opacity(0.8))
                         }
 
-                        Button(action: {
-                            // Przekazanie fizycznej paczki fiszek do bezpiecznego menadżera
-                            studyMode = .flashcards(Array(dueCards))
-                        }) {
-                            Text(dueCards.isEmpty ? "Wszystko zrobione!" : "Rozpocznij naukę")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(dueCards.isEmpty ? Color.gray.opacity(0.3) : Color.primary)
-                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                        }
-                        .disabled(dueCards.isEmpty)
-                        .buttonStyle(.borderless)
-
                         HStack(spacing: 12) {
                             Button(action: {
-                                // Przekazanie fizycznej paczki fiszek do bezpiecznego menadżera
-                                studyMode = .typing(Array(dueCards))
+                                studyMode = .flashcards(prioritizedCards(from: dueCards))
+                            }) {
+                                Text("Nauka")
+                                    .font(.subheadline).bold()
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 16)
+                                    .background(dueCards.isEmpty ? Color.gray.opacity(0.3) : Color.primary)
+                                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            }
+                            .disabled(dueCards.isEmpty)
+                            .buttonStyle(.borderless)
+
+                            Button(action: {
+                                studyMode = .typing(prioritizedCards(from: dueCards))
                             }) {
                                 Text("Wpisywanie")
                                     .font(.subheadline).bold()
                                     .foregroundColor(.primary)
                                     .frame(maxWidth: .infinity)
-                                    .padding()
+                                    .padding(.vertical, 16)
                                     .background(Color.orange.opacity(0.15))
                                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                             }
@@ -98,11 +97,11 @@ struct DashboardView: View {
                             .buttonStyle(.borderless)
 
                             Button(action: { isFreePractice = true }) {
-                                Text("Wolny Trening")
+                                Text("Trening")
                                     .font(.subheadline).bold()
                                     .foregroundColor(.blue)
                                     .frame(maxWidth: .infinity)
-                                    .padding()
+                                    .padding(.vertical, 16)
                                     .background(Color.blue.opacity(0.15))
                                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                             }
@@ -169,6 +168,15 @@ struct DashboardView: View {
                 FreePracticeConfigView()
             }
         }
+    }
+
+    private func prioritizedCards(from cards: [Flashcard]) -> [Flashcard] {
+        let weightedCards = cards.map { card -> (Flashcard, Double) in
+            let weight = card.easeFactor < 1.4 ? 2.0 : 1.0
+            return (card, weight * Double.random(in: 0..<1))
+        }
+        // Stabilne sortowanie na podstawie wylosowanej wagi
+        return weightedCards.sorted { $0.1 > $1.1 }.map { $0.0 }
     }
 
     private func formatTime(_ seconds: Double) -> String {

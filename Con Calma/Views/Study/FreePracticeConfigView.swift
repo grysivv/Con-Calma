@@ -44,8 +44,8 @@ struct FreePracticeConfigView: View {
 
                 Section {
                     Button(action: {
-                        // Tworzymy snapshot sesji (fiszki są natychmiast zamrażane i przetasowane)
-                        practiceSession = PracticeSession(cards: filteredCards.shuffled())
+                        // Tworzymy snapshot sesji i tasujemy, faworyzując fiszki z mniejszym easeFactor
+                        practiceSession = PracticeSession(cards: prioritizedCards(from: filteredCards))
                     }) {
                         Text("Rozpocznij (\(filteredCards.count) fiszek)")
                             .frame(maxWidth: .infinity, alignment: .center)
@@ -76,5 +76,13 @@ struct FreePracticeConfigView: View {
             }
 #endif
         }
+    }
+
+    private func prioritizedCards(from cards: [Flashcard]) -> [Flashcard] {
+        let weightedCards = cards.map { card -> (Flashcard, Double) in
+            let weight = card.easeFactor < 1.4 ? 2.0 : 1.0
+            return (card, weight * Double.random(in: 0..<1))
+        }
+        return weightedCards.sorted { $0.1 > $1.1 }.map { $0.0 }
     }
 }

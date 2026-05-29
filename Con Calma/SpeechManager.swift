@@ -19,8 +19,8 @@ final class SpeechManager {
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: language)
 
-        // Szybkość mowy: domyślna wartość jest optymalna
-        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
+        // Szybkość mowy: lekko spowolniona (zgodnie z życzeniem - 15% wolniej)
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate * 0.85
         utterance.pitchMultiplier = 1.0
 
         // Konfiguracja AVAudioSession jest dostępna tylko dla systemów mobilnych.
