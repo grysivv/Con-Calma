@@ -16,6 +16,8 @@ struct StudySessionView: View {
 
     @State private var currentIndex = 0
     @State private var isFlipped = false
+    @State private var editingCard: Flashcard?
+    @State private var cardOffset: CGSize = .zero
 
     @State private var sessionTime: Double = 0
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -40,6 +42,41 @@ struct StudySessionView: View {
                 if currentIndex < cards.count {
                     FlashcardView(card: cards[currentIndex], isFlipped: $isFlipped)
                         .padding(.horizontal, 24)
+                        .offset(x: cardOffset.width, y: 0)
+                        .rotationEffect(.degrees(Double(cardOffset.width / 20)))
+                        .gesture(
+                            DragGesture()
+                                .onChanged { gesture in
+                                    if isFlipped {
+                                        cardOffset = gesture.translation
+                                    }
+                                }
+                                .onEnded { _ in
+                                    if isFlipped {
+                                        if cardOffset.width > 100 {
+                                            // Swipe right - Good
+                                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                                cardOffset.width = 500
+                                            }
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                                processAnswer(quality: .good)
+                                            }
+                                        } else if cardOffset.width < -100 {
+                                            // Swipe left - Again
+                                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                                cardOffset.width = -500
+                                            }
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                                processAnswer(quality: .again)
+                                            }
+                                        } else {
+                                            withAnimation(.spring()) {
+                                                cardOffset = .zero
+                                            }
+                                        }
+                                    }
+                                }
+                        )
                         .onTapGesture {
                             withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                                 isFlipped.toggle()
@@ -106,6 +143,16 @@ struct StudySessionView: View {
                         .fontWeight(.medium)
                         .foregroundColor(.secondary)
                 }
+                ToolbarItem(placement: .primaryAction) {
+                    if currentIndex < cards.count {
+                        Button(action: { editingCard = cards[currentIndex] }) {
+                            Image(systemName: "pencil")
+                        }
+                    }
+                }
+            }
+            .sheet(item: $editingCard) { card in
+                EditFlashcardView(card: card)
             }
             .onReceive(timer) { _ in
                 if currentIndex < cards.count {
@@ -169,6 +216,9 @@ struct StudySessionView: View {
             currentIndex += 1
             isFlipped = false
         }
+
+        // Zresetuj offset bez animacji aby nowa karta wjechała z poprawnej pozycji
+        cardOffset = .zero
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
             triggerTTS()
