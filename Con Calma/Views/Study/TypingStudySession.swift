@@ -60,15 +60,24 @@ struct TypingStudySessionView: View {
 
                         if showFeedback {
                             HStack(spacing: 8) {
-                                Image(systemName: wasCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
-                                    .foregroundColor(wasCorrect ? .green : .red)
-                                Text(wasCorrect ? "Dobrze!" : "Poprawna odpowiedź: \(card.front)")
-                                    .foregroundColor(wasCorrect ? .green : .red)
+                                if wasCorrect {
+                                    if !hasFailedCurrentCard {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundColor(.green)
+                                        Text("Dobrze!")
+                                            .foregroundColor(.green)
+                                    }
+                                } else {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundColor(.red)
+                                    Text("Poprawna odpowiedź: \(card.front)")
+                                        .foregroundColor(.red)
+                                }
                             }
                         }
 
                         HStack(spacing: 12) {
-                            Button(action: { submit(answerIsCorrect: false) }) {
+                            Button(action: { submit(answerIsCorrect: false, skipForceTyping: true) }) {
                                 Text("Pomiń")
                                     .fontWeight(.medium)
                                     .frame(maxWidth: .infinity)
@@ -169,7 +178,7 @@ struct TypingStudySessionView: View {
         submit(answerIsCorrect: correct)
     }
 
-    private func submit(answerIsCorrect: Bool) {
+    private func submit(answerIsCorrect: Bool, skipForceTyping: Bool = false) {
         showFeedback = true
         wasCorrect = answerIsCorrect
 
@@ -188,13 +197,15 @@ struct TypingStudySessionView: View {
         if !answerIsCorrect {
             hasFailedCurrentCard = true
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    showFeedback = false
-                    userAnswer = ""
+            if !skipForceTyping {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        showFeedback = false
+                        userAnswer = ""
+                    }
                 }
+                return
             }
-            return
         }
 
         if !isFreePractice {

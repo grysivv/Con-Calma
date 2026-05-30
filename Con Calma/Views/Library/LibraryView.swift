@@ -108,8 +108,17 @@ struct LibraryView: View {
                                 }
                                 .tint(.blue)
                             }
+                            .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                Button(role: .destructive) {
+                                    withAnimation {
+                                        modelContext.delete(card)
+                                        try? modelContext.save()
+                                    }
+                                } label: {
+                                    Label("Usuń", systemImage: "trash")
+                                }
+                            }
                         }
-                        .onDelete(perform: deleteCards)
                     }
                 }
 #if os(iOS)
@@ -148,15 +157,6 @@ struct LibraryView: View {
             .sheet(item: $editingCard) { card in
                 EditFlashcardView(card: card)
             }
-        }
-    }
-
-    private func deleteCards(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(filteredCards[index])
-            }
-            try? modelContext.save()
         }
     }
 }
