@@ -68,6 +68,7 @@ struct CardFace: View {
                         Image(systemName: "speaker.wave.2.circle.fill")
                             .font(.system(size: 32))
                             .foregroundColor(.blue.opacity(0.8))
+                            .accessibilityLabel("Odtwórz wymowę")
                     }
                     // Zapobiega odwróceniu karty przy kliknięciu w głośnik
                     .buttonStyle(.plain)

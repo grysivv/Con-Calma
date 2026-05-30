@@ -131,11 +131,13 @@ struct LibraryView: View {
                         } label: {
                             Image(systemName: selectedCategory != "Wszystkie" || mustHaveContext ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
                                 .font(.title3)
+                                .accessibilityLabel("Filtruj fiszki")
                         }
 
                         Button(action: { showingAddSheet = true }) {
                             Image(systemName: "plus.circle.fill")
                                 .font(.title3)
+                                .accessibilityLabel("Dodaj nową fiszkę")
                         }
                     }
                 }

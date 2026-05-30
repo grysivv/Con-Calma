@@ -97,6 +97,7 @@ struct StudySessionView: View {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(.secondary)
                             .font(.title3)
+                            .accessibilityLabel("Zamknij")
                     }
                     .buttonStyle(.plain)
                 }
