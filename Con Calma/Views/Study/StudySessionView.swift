@@ -47,12 +47,13 @@ struct StudySessionView: View {
                         .gesture(
                             DragGesture()
                                 .onChanged { gesture in
-                                    if isFlipped {
+                                    // Umożliwiamy swipe nawet bez odwracania jeżeli widać przód z językiem polskim
+                                    if isFlipped || showPolishOnFront {
                                         cardOffset = gesture.translation
                                     }
                                 }
                                 .onEnded { _ in
-                                    if isFlipped {
+                                    if isFlipped || showPolishOnFront {
                                         if cardOffset.width > 100 {
                                             // Swipe right - Good
                                             withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
