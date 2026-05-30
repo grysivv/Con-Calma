@@ -60,19 +60,18 @@ struct TypingStudySessionView: View {
 
                         if showFeedback {
                             HStack(spacing: 8) {
-                                if wasCorrect {
-                                    if !hasFailedCurrentCard {
-                                        Image(systemName: "checkmark.circle.fill")
-                                            .foregroundColor(.green)
-                                        Text("Dobrze!")
-                                            .foregroundColor(.green)
-                                    }
-                                } else {
+                                if wasCorrect && !hasFailedCurrentCard {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.green)
+                                    Text("Dobrze!")
+                                        .foregroundColor(.green)
+                                } else if !wasCorrect {
                                     Image(systemName: "xmark.circle.fill")
                                         .foregroundColor(.red)
                                     Text("Poprawna odpowiedź: \(card.front)")
                                         .foregroundColor(.red)
                                 }
+                                // Jeśli wasCorrect jest True, a hasFailedCurrentCard jest True, nie pokazujemy nic (zgodnie z prośbą o ukrycie wymuszonych wpisań)
                             }
                         }
 
@@ -100,6 +99,18 @@ struct TypingStudySessionView: View {
                             }
                             .buttonStyle(.plain)
                             .disabled(showFeedback || userAnswer.trimmingCharacters(in: .whitespaces).isEmpty)
+
+                            Button(action: { editingCard = card }) {
+                                Image(systemName: "pencil")
+                                    .font(.title2)
+                                    .foregroundColor(.primary)
+                                    .padding(.vertical, 12)
+                                    .padding(.horizontal, 16)
+                                    .background(Color.secondary.opacity(0.15))
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(showFeedback)
                         }
                     }
                     .padding(.horizontal, 24)
@@ -206,6 +217,9 @@ struct TypingStudySessionView: View {
                 }
                 return
             }
+        } else if hasFailedCurrentCard {
+            // Jeśli użytkownik wpisuje poprawnie z przymusu, nie pokazujemy feedbacku przez długi czas i pomijamy 'Dobrze'
+            showFeedback = false
         }
 
         if !isFreePractice {
@@ -230,8 +244,9 @@ struct TypingStudySessionView: View {
 
         saveStudyTime()
 
-        // Wydłużony czas, byś zdążył usłyszeć słówko po włosku i zobaczyć błędy
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+        // Wydłużony czas dla nowych słówek, krótki jeśli wpisanie wymuszone po błędzie
+        let delayTime = hasFailedCurrentCard && answerIsCorrect ? 0.3 : 1.5
+        DispatchQueue.main.asyncAfter(deadline: .now() + delayTime) {
             withAnimation(.easeInOut(duration: 0.3)) {
                 currentIndex += 1
                 userAnswer = ""
