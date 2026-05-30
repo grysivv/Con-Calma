@@ -65,17 +65,23 @@ struct StatisticsView: View {
                         Text("\(allCards.count)")
                             .fontWeight(.bold)
                     }
+
+                    let (learningCount, unlearnedCount) = allCards.reduce(into: (0, 0)) { counts, card in
+                        if card.repetitions > 0 { counts.0 += 1 }
+                        else { counts.1 += 1 }
+                    }
+
                     HStack {
                         Text("W trakcie nauki")
                         Spacer()
-                        Text("\(allCards.filter { $0.repetitions > 0 }.count)")
+                        Text("\(learningCount)")
                             .fontWeight(.bold)
                             .foregroundColor(.green)
                     }
                     HStack {
                         Text("Nienauczone")
                         Spacer()
-                        Text("\(allCards.filter { $0.repetitions == 0 }.count)")
+                        Text("\(unlearnedCount)")
                             .fontWeight(.bold)
                             .foregroundColor(.orange)
                     }
@@ -95,7 +101,8 @@ struct StatisticsView: View {
     private func last7Days() -> [(dateStr: String, label: String, count: Int, studyTime: Double)] {
         var result: [(String, String, Int, Double)] = []
         let calendar = Calendar.current
-        let dict = Dictionary(uniqueKeysWithValues: allActivities.map { ($0.dateString, $0) })
+        // performance hack: reduce(into:) zmniejsza liczbę tymczasowych alokacji pamięci w map
+        let dict = allActivities.reduce(into: [String: DailyActivity]()) { $0[$1.dateString] = $1 }
 
         let formatter = DateFormatter()
         formatter.dateFormat = "EEE"
@@ -147,7 +154,8 @@ struct HeatmapView: View {
     private func last30Days() -> [(dateStr: String, dayNumber: String, count: Int)] {
         var result: [(String, String, Int)] = []
         let calendar = Calendar.current
-        let dict = Dictionary(uniqueKeysWithValues: activities.map { ($0.dateString, $0.count) })
+        // performance hack: reduce(into:)
+        let dict = activities.reduce(into: [String: Int]()) { $0[$1.dateString] = $1.count }
         for offset in (0..<35).reversed() {
             if let date = calendar.date(byAdding: .day, value: -offset, to: Date()) {
                 let key = DateFormatter.yyyyMMdd.string(from: date)

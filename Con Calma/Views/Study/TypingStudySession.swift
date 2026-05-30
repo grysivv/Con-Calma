@@ -18,6 +18,7 @@ struct TypingStudySessionView: View {
     @State private var showFeedback = false
     @State private var wasCorrect = false
     @State private var hasFailedCurrentCard = false
+    @State private var editingCard: Flashcard?
 
     @State private var sessionTime: Double = 0
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -138,6 +139,16 @@ struct TypingStudySessionView: View {
                         .fontWeight(.medium)
                         .foregroundColor(.secondary)
                 }
+                ToolbarItem(placement: .primaryAction) {
+                    if currentIndex < cards.count {
+                        Button(action: { editingCard = cards[currentIndex] }) {
+                            Image(systemName: "pencil")
+                        }
+                    }
+                }
+            }
+            .sheet(item: $editingCard) { card in
+                EditFlashcardView(card: card)
             }
             .onReceive(timer) { _ in
                 if currentIndex < cards.count && !showFeedback {

@@ -38,10 +38,9 @@ struct DashboardView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 30) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
+            VStack(spacing: 30) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
                             Text("Ciao!")
                                 .font(.largeTitle)
                                 .fontWeight(.bold)
@@ -136,10 +135,9 @@ struct DashboardView: View {
                     .background(Color.secondary.opacity(0.1))
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
 
-                    Spacer()
-                }
-                .padding(.horizontal)
+                Spacer()
             }
+            .padding(.horizontal)
             .background(Color.primary.opacity(0.03).ignoresSafeArea())
             .onAppear { calculateStats() }
             .onChange(of: dailyGoal) { _, _ in calculateStats() }
