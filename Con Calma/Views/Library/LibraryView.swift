@@ -14,6 +14,7 @@ struct LibraryView: View {
     @State private var showingAddSheet = false
     @State private var searchText = ""
     @State private var editingCard: Flashcard? = nil
+    @State private var selection = Set<Flashcard>()
 
     @State private var selectedTab: LibraryTab = .all
     @State private var selectedCategory: String = "Wszystkie"
@@ -71,7 +72,7 @@ struct LibraryView: View {
                 .padding(.horizontal)
                 .padding(.bottom, 8)
 
-                List {
+                List(selection: $selection) {
                     Section(footer: Text("Liczba wyników: \(filteredCards.count)")) {
                         ForEach(filteredCards) { card in
                             HStack {
@@ -130,6 +131,25 @@ struct LibraryView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     HStack {
+                        if !selection.isEmpty {
+                            Button(role: .destructive, action: {
+                                withAnimation {
+                                    for card in selection {
+                                        modelContext.delete(card)
+                                    }
+                                    try? modelContext.save()
+                                    selection.removeAll()
+                                }
+                            }) {
+                                Image(systemName: "trash")
+                                    .foregroundColor(.red)
+                            }
+                        }
+
+                        #if os(iOS)
+                        EditButton()
+                        #endif
+
                         Menu {
                             Picker("Kategoria", selection: $selectedCategory) {
                                 ForEach(categories, id: \.self) { cat in

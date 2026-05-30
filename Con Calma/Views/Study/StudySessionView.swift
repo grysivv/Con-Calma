@@ -47,33 +47,29 @@ struct StudySessionView: View {
                         .gesture(
                             DragGesture()
                                 .onChanged { gesture in
-                                    // Umożliwiamy swipe nawet bez odwracania jeżeli widać przód z językiem polskim
-                                    if isFlipped || showPolishOnFront {
-                                        cardOffset = gesture.translation
-                                    }
+                                    // Umożliwiamy swipe w każdym wypadku. Zgodnie z prośbą, można przesunąć fiszkę od razu przy polskiej wersji.
+                                    cardOffset = gesture.translation
                                 }
                                 .onEnded { _ in
-                                    if isFlipped || showPolishOnFront {
-                                        if cardOffset.width > 100 {
-                                            // Swipe right - Good
-                                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                                                cardOffset.width = 500
-                                            }
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                                processAnswer(quality: .good)
-                                            }
-                                        } else if cardOffset.width < -100 {
-                                            // Swipe left - Again
-                                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                                                cardOffset.width = -500
-                                            }
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                                processAnswer(quality: .again)
-                                            }
-                                        } else {
-                                            withAnimation(.spring()) {
-                                                cardOffset = .zero
-                                            }
+                                    if cardOffset.width > 100 {
+                                        // Swipe right - Good
+                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                            cardOffset.width = 500
+                                        }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                            processAnswer(quality: .good)
+                                        }
+                                    } else if cardOffset.width < -100 {
+                                        // Swipe left - Again
+                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                            cardOffset.width = -500
+                                        }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                            processAnswer(quality: .again)
+                                        }
+                                    } else {
+                                        withAnimation(.spring()) {
+                                            cardOffset = .zero
                                         }
                                     }
                                 }

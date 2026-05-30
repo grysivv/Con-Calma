@@ -138,6 +138,7 @@ struct DashboardView: View {
                 Spacer()
             }
             .padding(.horizontal)
+            .scrollDisabled(true)
             .background(Color.primary.opacity(0.03).ignoresSafeArea())
             .onAppear { calculateStats() }
             .onChange(of: dailyGoal) { _, _ in calculateStats() }
@@ -169,11 +170,11 @@ struct DashboardView: View {
     }
 
     private func prioritizedCards(from cards: [Flashcard]) -> [Flashcard] {
+        // performance hack: stabilne sortowanie unikające naruszenia strict weak ordering
         let weightedCards = cards.map { card -> (Flashcard, Double) in
             let weight = card.easeFactor < 1.4 ? 2.0 : 1.0
             return (card, weight * Double.random(in: 0..<1))
         }
-        // Stabilne sortowanie na podstawie wylosowanej wagi
         return weightedCards.sorted { $0.1 > $1.1 }.map { $0.0 }
     }
 
