@@ -213,6 +213,8 @@ struct StudySessionView: View {
             try? modelContext.save()
         }
 
+        saveStudyTime()
+
         withAnimation(.easeInOut(duration: 0.3)) {
             currentIndex += 1
             isFlipped = false
@@ -240,6 +242,7 @@ struct StudySessionView: View {
                 modelContext.insert(newActivity)
             }
             try? modelContext.save()
+            sessionTime = 0
         }
     }
 }

@@ -77,6 +77,16 @@ struct EditFlashcardView: View {
                     }
                     .disabled(!isKnown)
                 }
+
+                Section {
+                    Button(role: .destructive, action: deleteCard) {
+                        HStack {
+                            Spacer()
+                            Text("Usuń fiszkę")
+                            Spacer()
+                        }
+                    }
+                }
             }
             .navigationTitle("Edycja")
 #if os(iOS)
@@ -103,5 +113,11 @@ struct EditFlashcardView: View {
         card.easeFactor = 2.5
         card.nextReviewDate = Date()
         try? modelContext.save()
+    }
+
+    private func deleteCard() {
+        modelContext.delete(card)
+        try? modelContext.save()
+        dismiss()
     }
 }

@@ -17,6 +17,7 @@ struct TypingStudySessionView: View {
     @State private var userAnswer = ""
     @State private var showFeedback = false
     @State private var wasCorrect = false
+    @State private var hasFailedCurrentCard = false
 
     @State private var sessionTime: Double = 0
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -173,27 +174,39 @@ struct TypingStudySessionView: View {
         utterance.voice = AVSpeechSynthesisVoice(language: "it-IT")
         synthesizer.speak(utterance)
 
+        if !answerIsCorrect {
+            hasFailedCurrentCard = true
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showFeedback = false
+                    userAnswer = ""
+                }
+            }
+            return
+        }
+
         if !isFreePractice {
             let card = cards[currentIndex]
-            let quality: ReviewQuality = answerIsCorrect ? .good : .again
+            let quality: ReviewQuality = hasFailedCurrentCard ? .again : .good
             SRSAlgorithm.processReview(for: card, quality: quality)
 
-            if answerIsCorrect {
-                let todayStr = DateFormatter.yyyyMMdd.string(from: Date())
-                // performance hack: predykat i fetchLimit = 1 aby uniknąć ładowania wszystkich rekordów bazy w poszukiwaniu jednego
-                var descriptor = FetchDescriptor<DailyActivity>(predicate: #Predicate { $0.dateString == todayStr })
-                descriptor.fetchLimit = 1
-                if let activities = try? modelContext.fetch(descriptor) {
-                    if let todayActivity = activities.first {
-                        todayActivity.count += 1
-                    } else {
-                        let newActivity = DailyActivity(dateString: todayStr, count: 1)
-                        modelContext.insert(newActivity)
-                    }
+            let todayStr = DateFormatter.yyyyMMdd.string(from: Date())
+            // performance hack: predykat i fetchLimit = 1 aby uniknąć ładowania wszystkich rekordów bazy w poszukiwaniu jednego
+            var descriptor = FetchDescriptor<DailyActivity>(predicate: #Predicate { $0.dateString == todayStr })
+            descriptor.fetchLimit = 1
+            if let activities = try? modelContext.fetch(descriptor) {
+                if let todayActivity = activities.first {
+                    todayActivity.count += 1
+                } else {
+                    let newActivity = DailyActivity(dateString: todayStr, count: 1)
+                    modelContext.insert(newActivity)
                 }
             }
             try? modelContext.save()
         }
+
+        saveStudyTime()
 
         // Wydłużony czas, byś zdążył usłyszeć słówko po włosku i zobaczyć błędy
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
@@ -201,6 +214,7 @@ struct TypingStudySessionView: View {
                 currentIndex += 1
                 userAnswer = ""
                 showFeedback = false
+                hasFailedCurrentCard = false
             }
         }
     }
@@ -219,6 +233,7 @@ struct TypingStudySessionView: View {
                 modelContext.insert(newActivity)
             }
             try? modelContext.save()
+            sessionTime = 0
         }
     }
 }
