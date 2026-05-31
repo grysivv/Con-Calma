@@ -19,6 +19,7 @@ struct TypingStudySessionView: View {
     @State private var wasCorrect = false
     @State private var hasFailedCurrentCard = false
     @State private var editingCard: Flashcard?
+    @FocusState private var isInputFocused: Bool
 
     @State private var sessionTime: Double = 0
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -53,6 +54,10 @@ struct TypingStudySessionView: View {
 
                         TextField("Wpisz po włosku...", text: $userAnswer)
                             .textFieldStyle(.roundedBorder)
+                            .focused($isInputFocused)
+                            .onAppear {
+                                isInputFocused = true
+                            }
 #if os(iOS)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled(true)
@@ -177,6 +182,9 @@ struct TypingStudySessionView: View {
             }
             .onDisappear {
                 saveStudyTime()
+            }
+            .onChange(of: currentIndex) { _, _ in
+                isInputFocused = true
             }
         }
     }
