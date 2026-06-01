@@ -1,3 +1,3 @@
-## 2026-05-30 - Accessibility for icon-only buttons
-**Learning:** Icon-only buttons using system images in SwiftUI need explicit `.accessibilityLabel` modifiers for VoiceOver support, especially when functionality isn't obvious without visual context.
-**Action:** Always add descriptive `.accessibilityLabel` to any `Button` whose label is exclusively an `Image(systemName:)`.
+## 2024-03-24 - Accessibility on Flashcards
+**Learning:** Found multiple places in an iOS application lacking proper accessibility modifiers. E.g., the flashcard view has buttons where voiceover needs clear context.
+**Action:** Always verify `accessibilityLabel` or `accessibilityHint` in SwiftUI buttons with icons to ensure the screen reader describes the element properly. Also verify contrast for smaller fonts.
