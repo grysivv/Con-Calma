@@ -43,37 +43,37 @@ struct TypingStudySessionView: View {
                 if currentIndex < cards.count {
                     let card = cards[currentIndex]
                     VStack(spacing: 16) {
-                        Text("Przetłumacz na włoski:")
-                            .font(.headline)
-                            .foregroundColor(.secondary)
-                        Text(card.back)
-                            .font(.system(size: 34, weight: .bold, design: .rounded))
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal)
+                        if let category = card.category, !category.isEmpty {
+                            Text(category.uppercased())
+                                .font(.caption)
+                                .fontWeight(.bold)
+                                .foregroundColor(.secondary)
+                        } else {
+                            Text(" ")
+                                .font(.caption)
+                        }
+
+                        if showFeedback && !wasCorrect {
+                            Text(card.front)
+                                .font(.system(size: 34, weight: .bold, design: .rounded))
+                                .foregroundColor(.red)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
+                        } else {
+                            Text(card.back)
+                                .font(.system(size: 34, weight: .bold, design: .rounded))
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
+                        }
 
                         TextField("Wpisz po włosku...", text: $userAnswer)
                             .textFieldStyle(.roundedBorder)
+                            .foregroundStyle(showFeedback ? (wasCorrect ? .green : .red) : .primary)
+                            .onSubmit { checkAnswer() }
 #if os(iOS)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled(true)
 #endif
-
-                        if showFeedback {
-                            HStack(spacing: 8) {
-                                if wasCorrect && !hasFailedCurrentCard {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(.green)
-                                    Text("Dobrze!")
-                                        .foregroundColor(.green)
-                                } else if !wasCorrect {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .foregroundColor(.red)
-                                    Text("Poprawna odpowiedź: \(card.front)")
-                                        .foregroundColor(.red)
-                                }
-                                // Jeśli wasCorrect jest True, a hasFailedCurrentCard jest True, nie pokazujemy nic (zgodnie z prośbą o ukrycie wymuszonych wpisań)
-                            }
-                        }
 
                         HStack(spacing: 12) {
                             Button(action: { submit(answerIsCorrect: false, skipForceTyping: true) }) {
@@ -99,18 +99,6 @@ struct TypingStudySessionView: View {
                             }
                             .buttonStyle(.plain)
                             .disabled(showFeedback || userAnswer.trimmingCharacters(in: .whitespaces).isEmpty)
-
-                            Button(action: { editingCard = card }) {
-                                Image(systemName: "pencil")
-                                    .font(.title2)
-                                    .foregroundColor(.primary)
-                                    .padding(.vertical, 12)
-                                    .padding(.horizontal, 16)
-                                    .background(Color.secondary.opacity(0.15))
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                            }
-                            .buttonStyle(.plain)
-                            .disabled(showFeedback)
                         }
                     }
                     .padding(.horizontal, 24)
@@ -183,8 +171,21 @@ struct TypingStudySessionView: View {
 
     private func checkAnswer() {
         let card = cards[currentIndex]
-        let normalizedUser = userAnswer.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        let normalizedCorrect = card.front.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+
+        let normalizedUser = userAnswer
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+            .replacingOccurrences(of: "’", with: "'")
+            .replacingOccurrences(of: "´", with: "'")
+            .replacingOccurrences(of: "`", with: "'")
+
+        let normalizedCorrect = card.front
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+            .replacingOccurrences(of: "’", with: "'")
+            .replacingOccurrences(of: "´", with: "'")
+            .replacingOccurrences(of: "`", with: "'")
+
         let correct = normalizedUser == normalizedCorrect
         submit(answerIsCorrect: correct)
     }
@@ -227,16 +228,18 @@ struct TypingStudySessionView: View {
             let quality: ReviewQuality = hasFailedCurrentCard ? .again : .good
             SRSAlgorithm.processReview(for: card, quality: quality)
 
-            let todayStr = DateFormatter.yyyyMMdd.string(from: Date())
-            // performance hack: predykat i fetchLimit = 1 aby uniknąć ładowania wszystkich rekordów bazy w poszukiwaniu jednego
-            var descriptor = FetchDescriptor<DailyActivity>(predicate: #Predicate { $0.dateString == todayStr })
-            descriptor.fetchLimit = 1
-            if let activities = try? modelContext.fetch(descriptor) {
-                if let todayActivity = activities.first {
-                    todayActivity.count += 1
-                } else {
-                    let newActivity = DailyActivity(dateString: todayStr, count: 1)
-                    modelContext.insert(newActivity)
+            if quality != .again {
+                let todayStr = DateFormatter.yyyyMMdd.string(from: Date())
+                // performance hack: predykat i fetchLimit = 1 aby uniknąć ładowania wszystkich rekordów bazy w poszukiwaniu jednego
+                var descriptor = FetchDescriptor<DailyActivity>(predicate: #Predicate { $0.dateString == todayStr })
+                descriptor.fetchLimit = 1
+                if let activities = try? modelContext.fetch(descriptor) {
+                    if let todayActivity = activities.first {
+                        todayActivity.count += 1
+                    } else {
+                        let newActivity = DailyActivity(dateString: todayStr, count: 1)
+                        modelContext.insert(newActivity)
+                    }
                 }
             }
             try? modelContext.save()
