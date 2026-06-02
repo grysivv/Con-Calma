@@ -20,6 +20,8 @@ struct TypingStudySessionView: View {
     @State private var hasFailedCurrentCard = false
     @State private var editingCard: Flashcard?
 
+    @State private var lastBackup: FlashcardBackup?
+
     @State private var sessionTime: Double = 0
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
@@ -146,13 +148,24 @@ struct TypingStudySessionView: View {
 #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.secondary)
-                            .font(.title3)
-                            .accessibilityLabel("Zamknij")
+                    HStack {
+                        Button(action: { dismiss() }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.secondary)
+                                .font(.title3)
+                                .accessibilityLabel("Zamknij")
+                        }
+                        .buttonStyle(.plain)
+
+                        Button(action: { undoLastAction() }) {
+                            Image(systemName: "arrow.uturn.backward")
+                                .foregroundColor(lastBackup == nil ? .gray : .accentColor)
+                                .font(.title3)
+                                .accessibilityLabel("Cofnij")
+                        }
+                        .disabled(lastBackup == nil)
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
                 ToolbarItem(placement: .principal) {
                     Text("\(currentIndex) / \(cards.count)")
@@ -240,6 +253,14 @@ struct TypingStudySessionView: View {
         if !isFreePractice {
             let card = cards[currentIndex]
             let quality: ReviewQuality = hasFailedCurrentCard ? .again : .good
+            lastBackup = FlashcardBackup(
+                repetitions: card.repetitions,
+                interval: card.interval,
+                easeFactor: card.easeFactor,
+                nextReviewDate: card.nextReviewDate,
+                activityModified: (quality != .again)
+            )
+
             SRSAlgorithm.processReview(for: card, quality: quality)
 
             if quality != .again {
@@ -271,6 +292,38 @@ struct TypingStudySessionView: View {
                 hasFailedCurrentCard = false
             }
         }
+    }
+
+    private func undoLastAction() {
+        guard let backup = lastBackup else { return }
+        guard currentIndex > 0 else { return }
+
+        currentIndex -= 1
+        let card = cards[currentIndex]
+
+        card.repetitions = backup.repetitions
+        card.interval = backup.interval
+        card.easeFactor = backup.easeFactor
+        card.nextReviewDate = backup.nextReviewDate
+
+        if backup.activityModified {
+            let todayStr = DateFormatter.yyyyMMdd.string(from: Date())
+            var descriptor = FetchDescriptor<DailyActivity>(predicate: #Predicate { $0.dateString == todayStr })
+            descriptor.fetchLimit = 1
+            if let activities = try? modelContext.fetch(descriptor), let todayActivity = activities.first {
+                todayActivity.count = max(0, todayActivity.count - 1)
+            }
+        }
+
+        try? modelContext.save()
+
+        withAnimation(.easeInOut(duration: 0.3)) {
+            userAnswer = ""
+            showFeedback = false
+            hasFailedCurrentCard = false
+        }
+
+        lastBackup = nil
     }
 
     private func saveStudyTime() {
