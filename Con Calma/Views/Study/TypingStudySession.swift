@@ -104,6 +104,7 @@ struct TypingStudySessionView: View {
                                 Image(systemName: "pencil")
                                     .font(.title2)
                                     .foregroundColor(.primary)
+                                    .accessibilityLabel("Edytuj fiszkę")
                                     .padding(.vertical, 12)
                                     .padding(.horizontal, 16)
                                     .background(Color.secondary.opacity(0.15))
@@ -163,6 +164,7 @@ struct TypingStudySessionView: View {
                     if currentIndex < cards.count {
                         Button(action: { editingCard = cards[currentIndex] }) {
                             Image(systemName: "pencil")
+                                .accessibilityLabel("Edytuj fiszkę")
                         }
                     }
                 }
