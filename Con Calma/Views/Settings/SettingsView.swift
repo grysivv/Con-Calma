@@ -25,6 +25,9 @@ struct SettingsView: View {
     @State private var importAlertTitle = ""
     @State private var importAlertMessage = ""
 
+    @State private var showDuplicateAlert = false
+    @State private var duplicateAlertMessage = ""
+
     // Identyczna poprawka normalizacji jak w oknie dodawania
     private func normalize(_ string: String) -> String {
         var clean = string.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
@@ -108,6 +111,14 @@ struct SettingsView: View {
                             .foregroundColor(.red)
                     }
                     .buttonStyle(.borderless)
+
+                    Button(role: .destructive) {
+                        removeDuplicates()
+                    } label: {
+                        Label("Usuń duplikaty", systemImage: "rectangle.on.rectangle.slash")
+                            .foregroundColor(.red)
+                    }
+                    .buttonStyle(.borderless)
                 }
             }
 #if os(iOS)
@@ -133,6 +144,11 @@ struct SettingsView: View {
                 Button("Wyczyść", role: .destructive) { deleteAllActivities() }
             } message: {
                 Text("Twoje codzienne postępy oraz statystyki sesji zostaną trwale wyzerowane.")
+            }
+            .alert("Usuwanie duplikatów", isPresented: $showDuplicateAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(duplicateAlertMessage)
             }
             .alert(importAlertTitle, isPresented: $showImportAlert) {
                 Button("OK", role: .cancel) {}
@@ -199,6 +215,34 @@ struct SettingsView: View {
         if let activities = try? modelContext.fetch(descriptor) {
             activities.forEach { modelContext.delete($0) }
             try? modelContext.save()
+        }
+    }
+
+    private func removeDuplicates() {
+        let descriptor = FetchDescriptor<Flashcard>()
+        if let allCards = try? modelContext.fetch(descriptor) {
+            let groupedCards = Dictionary(grouping: allCards) { card in
+                card.front.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            }
+
+            var deletedCount = 0
+
+            for (_, group) in groupedCards {
+                if group.count > 1 {
+                    let sortedGroup = group.sorted { $0.creationDate > $1.creationDate }
+                    for cardToDelete in sortedGroup.dropFirst() {
+                        modelContext.delete(cardToDelete)
+                        deletedCount += 1
+                    }
+                }
+            }
+
+            if deletedCount > 0 {
+                try? modelContext.save()
+            }
+
+            duplicateAlertMessage = deletedCount > 0 ? "Usunięto \(deletedCount) duplikatów." : "Nie znaleziono żadnych duplikatów."
+            showDuplicateAlert = true
         }
     }
 
