@@ -41,6 +41,8 @@ struct StudySessionView: View {
 
                 if currentIndex < cards.count {
                     FlashcardView(card: cards[currentIndex], isFlipped: $isFlipped)
+                        .id(currentIndex)
+                        .transition(.asymmetric(insertion: .opacity, removal: .opacity))
                         .padding(.horizontal, 24)
                         .offset(x: cardOffset.width, y: 0)
                         .rotationEffect(.degrees(Double(cardOffset.width / 20)))
@@ -213,9 +215,16 @@ struct StudySessionView: View {
 
         saveStudyTime()
 
-        withAnimation(.easeInOut(duration: 0.3)) {
-            currentIndex += 1
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
             isFlipped = false
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                currentIndex += 1
+            }
         }
 
         // Zresetuj offset bez animacji aby nowa karta wjechała z poprawnej pozycji
