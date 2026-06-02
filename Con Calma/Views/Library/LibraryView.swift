@@ -143,6 +143,7 @@ struct LibraryView: View {
                             }) {
                                 Image(systemName: "trash")
                                     .foregroundColor(.red)
+                                    .accessibilityLabel("Usuń zaznaczone fiszki")
                             }
                         }
 

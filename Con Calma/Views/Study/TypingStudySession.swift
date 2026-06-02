@@ -99,6 +99,19 @@ struct TypingStudySessionView: View {
                             }
                             .buttonStyle(.plain)
                             .disabled(showFeedback || userAnswer.trimmingCharacters(in: .whitespaces).isEmpty)
+
+                            Button(action: { editingCard = card }) {
+                                Image(systemName: "pencil")
+                                    .font(.title2)
+                                    .foregroundColor(.primary)
+                                    .accessibilityLabel("Edytuj fiszkę")
+                                    .padding(.vertical, 12)
+                                    .padding(.horizontal, 16)
+                                    .background(Color.secondary.opacity(0.15))
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(showFeedback)
                         }
                     }
                     .padding(.horizontal, 24)
@@ -151,6 +164,7 @@ struct TypingStudySessionView: View {
                     if currentIndex < cards.count {
                         Button(action: { editingCard = cards[currentIndex] }) {
                             Image(systemName: "pencil")
+                                .accessibilityLabel("Edytuj fiszkę")
                         }
                     }
                 }

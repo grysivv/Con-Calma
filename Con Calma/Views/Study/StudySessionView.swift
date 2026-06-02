@@ -147,6 +147,7 @@ struct StudySessionView: View {
                     if currentIndex < cards.count {
                         Button(action: { editingCard = cards[currentIndex] }) {
                             Image(systemName: "pencil")
+                                .accessibilityLabel("Edytuj fiszkę")
                         }
                     }
                 }
