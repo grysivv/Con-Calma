@@ -55,12 +55,25 @@ struct TypingStudySessionView: View {
                                 .font(.caption)
                         }
 
-                        if showFeedback && !wasCorrect {
-                            Text(card.front)
-                                .font(.system(size: 34, weight: .bold, design: .rounded))
-                                .foregroundColor(.red)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal)
+                        if showFeedback {
+                            if !wasCorrect {
+                                Text(card.front)
+                                    .font(.system(size: 34, weight: .bold, design: .rounded))
+                                    .foregroundColor(.red)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal)
+                            } else {
+                                VStack(spacing: 8) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.system(size: 40))
+                                        .foregroundColor(.green)
+                                    Text(card.front)
+                                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                                        .foregroundColor(.green)
+                                        .multilineTextAlignment(.center)
+                                        .padding(.horizontal)
+                                }
+                            }
                         } else {
                             Text(card.back)
                                 .font(.system(size: 34, weight: .bold, design: .rounded))
@@ -101,19 +114,6 @@ struct TypingStudySessionView: View {
                             }
                             .buttonStyle(.plain)
                             .disabled(showFeedback || userAnswer.trimmingCharacters(in: .whitespaces).isEmpty)
-
-                            Button(action: { editingCard = card }) {
-                                Image(systemName: "pencil")
-                                    .font(.title2)
-                                    .foregroundColor(.primary)
-                                    .accessibilityLabel("Edytuj fiszkę")
-                                    .padding(.vertical, 12)
-                                    .padding(.horizontal, 16)
-                                    .background(Color.secondary.opacity(0.15))
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                            }
-                            .buttonStyle(.plain)
-                            .disabled(showFeedback)
                         }
                     }
                     .padding(.horizontal, 24)
