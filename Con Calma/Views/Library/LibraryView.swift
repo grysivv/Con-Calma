@@ -122,6 +122,19 @@ struct LibraryView: View {
                         }
                     }
                 }
+                .overlay {
+                    if filteredCards.isEmpty {
+                        VStack(spacing: 12) {
+                            Image(systemName: "tray")
+                                .font(.system(size: 48))
+                                .foregroundColor(.secondary)
+                                .accessibilityHidden(true)
+                            Text("Brak wyników")
+                                .font(.headline)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
 #if os(iOS)
                 .listStyle(.insetGrouped)
 #endif
