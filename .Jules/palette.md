@@ -7,3 +7,6 @@
 ## 2026-06-03 - VoiceOver Context in Empty States
 **Learning:** Decorative icons in empty states (like the tray icon for empty library results) are read by VoiceOver by default in SwiftUI, creating unnecessary auditory clutter for screen reader users.
 **Action:** Always use `.accessibilityHidden(true)` on purely decorative structural images that accompany text labels in empty states.
+## 2026-06-04 - VoiceOver Grouping for Stat Cards
+**Learning:** Independent stat labels and values are read disjointedly by VoiceOver, causing confusion. SwiftUI generic system icons without labels add noise.
+**Action:** Apply .accessibilityElement(children: .ignore) and a custom .accessibilityLabel("\(title): \(value)") to the parent container to present a unified, semantic VoiceOver element.
