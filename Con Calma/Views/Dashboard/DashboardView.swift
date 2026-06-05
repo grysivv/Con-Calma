@@ -5,11 +5,13 @@ import SwiftData
 enum StudyMode: Identifiable {
     case flashcards([Flashcard])
     case typing([Flashcard])
+    case match([Flashcard])
 
     var id: String {
         switch self {
         case .flashcards: return "flashcards"
         case .typing: return "typing"
+        case .match: return "match"
         }
     }
 }
@@ -66,45 +68,63 @@ struct DashboardView: View {
                                 .foregroundColor(.accentColor.opacity(0.8))
                         }
 
-                        HStack(spacing: 12) {
-                            Button(action: {
-                                studyMode = .flashcards(prioritizedCards(from: dueCards))
-                            }) {
-                                Text("Nauka")
-                                    .font(.subheadline).bold()
-                                    .foregroundColor(.white)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 16)
-                                    .background(dueCards.isEmpty ? Color.gray.opacity(0.3) : Color.primary)
-                                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                            }
-                            .disabled(dueCards.isEmpty)
-                            .buttonStyle(.borderless)
+                        VStack(spacing: 12) {
+                            HStack(spacing: 12) {
+                                Button(action: {
+                                    studyMode = .flashcards(prioritizedCards(from: dueCards))
+                                }) {
+                                    Text("Nauka")
+                                        .font(.subheadline).bold()
+                                        .foregroundColor(.white)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 16)
+                                        .background(dueCards.isEmpty ? Color.gray.opacity(0.3) : Color.primary)
+                                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                                }
+                                .disabled(dueCards.isEmpty)
+                                .buttonStyle(.borderless)
 
-                            Button(action: {
-                                studyMode = .typing(prioritizedCards(from: dueCards))
-                            }) {
-                                Text("Wpisywanie")
-                                    .font(.subheadline).bold()
-                                    .foregroundColor(.primary)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 16)
-                                    .background(Color.orange.opacity(0.15))
-                                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                                Button(action: {
+                                    studyMode = .typing(prioritizedCards(from: dueCards))
+                                }) {
+                                    Text("Wpisywanie")
+                                        .font(.subheadline).bold()
+                                        .foregroundColor(.primary)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 16)
+                                        .background(Color.orange.opacity(0.15))
+                                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                                }
+                                .disabled(dueCards.isEmpty)
+                                .buttonStyle(.borderless)
                             }
-                            .disabled(dueCards.isEmpty)
-                            .buttonStyle(.borderless)
 
-                            Button(action: { isFreePractice = true }) {
-                                Text("Trening")
-                                    .font(.subheadline).bold()
-                                    .foregroundColor(.blue)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 16)
-                                    .background(Color.blue.opacity(0.15))
-                                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            HStack(spacing: 12) {
+                                Button(action: { isFreePractice = true }) {
+                                    Text("Trening")
+                                        .font(.subheadline).bold()
+                                        .foregroundColor(.blue)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 16)
+                                        .background(Color.blue.opacity(0.15))
+                                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                                }
+                                .buttonStyle(.borderless)
+
+                                Button(action: {
+                                    studyMode = .match(allCards)
+                                }) {
+                                    Text("Szybki")
+                                        .font(.subheadline).bold()
+                                        .foregroundColor(.purple)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 16)
+                                        .background(Color.purple.opacity(0.15))
+                                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                                }
+                                .disabled(allCards.count < 6)
+                                .buttonStyle(.borderless)
                             }
-                            .buttonStyle(.borderless)
                         }
                     }
                     .padding(24)
@@ -149,6 +169,8 @@ struct DashboardView: View {
                     StudySessionView(cards: cards, isFreePractice: false)
                 case .typing(let cards):
                     TypingStudySessionView(cards: cards, isFreePractice: false)
+                case .match(let cards):
+                    QuickMatchSessionView(allCards: cards)
                 }
             }
 #else
@@ -160,6 +182,9 @@ struct DashboardView: View {
                 case .typing(let cards):
                     TypingStudySessionView(cards: cards, isFreePractice: false)
                         .frame(minWidth: 400, minHeight: 500)
+                case .match(let cards):
+                    QuickMatchSessionView(allCards: cards)
+                        .frame(minWidth: 500, minHeight: 600)
                 }
             }
 #endif

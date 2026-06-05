@@ -34,7 +34,7 @@ struct MainTabView: View {
     var body: some View {
         TabView {
             DashboardView()
-                .tabItem { Label("Dashboard", systemImage: "square.grid.2x2.fill") }
+                .tabItem { Label("Start", systemImage: "square.grid.2x2.fill") }
 
             LessonsView()
                 .tabItem { Label("Lekcje", systemImage: "book.fill") }
