@@ -12,6 +12,7 @@ final class Flashcard {
     var interval: Int = 0
     var easeFactor: Double = 2.5
     var nextReviewDate: Date = Date()
+    var consecutiveMistakes: Int = 0
 
     var creationDate: Date = Date()
 
