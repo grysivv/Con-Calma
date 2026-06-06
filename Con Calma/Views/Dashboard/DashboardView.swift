@@ -67,6 +67,8 @@ struct DashboardView: View {
                                 .font(.system(size: 50))
                                 .foregroundColor(.accentColor.opacity(0.8))
                         }
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("Do powtórki: \(dueCards.count)")
 
                         VStack(spacing: 12) {
                             HStack(spacing: 12) {
@@ -154,6 +156,8 @@ struct DashboardView: View {
                     .padding()
                     .background(Color.secondary.opacity(0.1))
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("Dzisiejszy cel serii: \(todayCount) z \(dailyGoal)")
 
                 Spacer()
             }
