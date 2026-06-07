@@ -7,3 +7,6 @@
 ## 2026-06-04 - VoiceOver Grouping for Stat Cards
 **Learning:** Independent stat labels and values are read disjointedly by VoiceOver, causing confusion. SwiftUI generic system icons without labels add noise.
 **Action:** Apply .accessibilityElement(children: .ignore) and a custom .accessibilityLabel("\(title): \(value)") to the parent container to present a unified, semantic VoiceOver element.
+## 2024-05-24 - Accessibility na złączonych kafelkach
+**Learning:** VoiceOver czyta każdą zmienną liczbową i nagłówek osobno na kafelkach statystyk, a dekoracyjne ikony systemowe wprowadzają zbędny szum.
+**Action:** Zawsze dodawaj `.accessibilityElement(children: .ignore)` na kontenerze i nadawaj jedno sensowne zdanie przez `.accessibilityLabel`. Ukrywaj ikony przez `.accessibilityHidden(true)`.

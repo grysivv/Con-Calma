@@ -16,6 +16,14 @@ enum StudyMode: Identifiable {
     }
 }
 
+struct ScaleButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.95 : 1)
+            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
+    }
+}
+
 struct DashboardView: View {
     @Environment(\.modelContext) private var modelContext
 
@@ -66,7 +74,10 @@ struct DashboardView: View {
                             Image(systemName: "brain.head.profile")
                                 .font(.system(size: 50))
                                 .foregroundColor(.accentColor.opacity(0.8))
+                                .accessibilityHidden(true)
                         }
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("Do powtórki: \(dueCards.count) fiszek")
 
                         VStack(spacing: 12) {
                             HStack(spacing: 12) {
@@ -82,7 +93,7 @@ struct DashboardView: View {
                                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                                 }
                                 .disabled(dueCards.isEmpty)
-                                .buttonStyle(.borderless)
+                                .buttonStyle(ScaleButtonStyle())
 
                                 Button(action: {
                                     studyMode = .typing(prioritizedCards(from: dueCards))
@@ -96,7 +107,7 @@ struct DashboardView: View {
                                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                                 }
                                 .disabled(dueCards.isEmpty)
-                                .buttonStyle(.borderless)
+                                .buttonStyle(ScaleButtonStyle())
                             }
 
                             HStack(spacing: 12) {
@@ -109,7 +120,7 @@ struct DashboardView: View {
                                         .background(Color.blue.opacity(0.15))
                                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                                 }
-                                .buttonStyle(.borderless)
+                                .buttonStyle(ScaleButtonStyle())
 
                                 Button(action: {
                                     studyMode = .match(allCards)
@@ -123,7 +134,7 @@ struct DashboardView: View {
                                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                                 }
                                 .disabled(allCards.count < 6)
-                                .buttonStyle(.borderless)
+                                .buttonStyle(ScaleButtonStyle())
                             }
                         }
                     }
