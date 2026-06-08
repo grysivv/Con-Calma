@@ -67,6 +67,24 @@ struct EditFlashcardView: View {
                     .padding(.vertical, 4)
                 }
 
+                if card.isLeech {
+                    Section {
+                        Button(action: {
+                            card.reviveLeech()
+                            try? modelContext.save()
+                        }) {
+                            HStack {
+                                Spacer()
+                                Text("Odblokuj kartę (Pijawka)")
+                                    .bold()
+                                    .foregroundColor(.white)
+                                Spacer()
+                            }
+                        }
+                        .listRowBackground(Color.orange)
+                    }
+                }
+
                 Section {
                     Button(role: .destructive, action: resetProgress) {
                         HStack {

@@ -97,6 +97,16 @@ struct LibraryView: View {
                                         .foregroundColor(.accentColor)
                                         .clipShape(Capsule())
                                 }
+
+                                if card.isLeech {
+                                    Text("Leech")
+                                        .font(.caption).bold()
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(Color.red.opacity(0.2))
+                                        .foregroundColor(.red)
+                                        .clipShape(Capsule())
+                                }
                             }
                             .padding(.vertical, 4)
                             .contentShape(Rectangle())

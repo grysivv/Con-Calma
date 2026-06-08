@@ -105,4 +105,60 @@ struct SRSAlgorithmTests {
         #expect(card.repetitions == 3)
         #expect(card.nextReviewDate > Date())
     }
+
+    @Test func testLeechDetection_LapsesThreshold() {
+        let card = Flashcard(front: "A", back: "B")
+        card.lapsesCount = 4
+        card.totalReviews = 2
+        card.successReviews = 1
+
+        SRSAlgorithm.processReview(for: card, quality: .again)
+
+        #expect(card.lapsesCount == 5)
+        #expect(card.isLeech == true)
+    }
+
+
+    @Test func testLeechDetection_EaseRatioThreshold() {
+        let card = Flashcard(front: "A", back: "B")
+        card.totalReviews = 9 // To be 10 after review
+        card.successReviews = 2 // 2/10 = 0.2 (< 0.3)
+        card.lapsesCount = 1
+
+        SRSAlgorithm.processReview(for: card, quality: .hard)
+
+        #expect(card.totalReviews == 10)
+        #expect(card.isLeech == true)
+    }
+
+    @Test func testReviveLeech() {
+        let card = Flashcard(front: "A", back: "B")
+        card.isLeech = true
+        card.lapsesCount = 5
+        card.totalReviews = 10
+        card.successReviews = 2
+        card.interval = 10
+        card.easeFactor = 1.3
+
+        card.reviveLeech()
+
+        #expect(card.isLeech == false)
+        #expect(card.lapsesCount == 0)
+        #expect(card.totalReviews == 0)
+        #expect(card.successReviews == 0)
+        #expect(card.interval == 1)
+        #expect(card.easeFactor == 2.0)
+    }
+
+    @Test func testLeechDetection_LapsesCountResetOnGood() {
+        let card = Flashcard(front: "A", back: "B")
+        card.lapsesCount = 4
+        card.totalReviews = 5
+        card.successReviews = 1
+
+        SRSAlgorithm.processReview(for: card, quality: .good)
+
+        #expect(card.lapsesCount == 0)
+        #expect(card.isLeech == false)
+    }
 }
