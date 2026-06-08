@@ -20,6 +20,8 @@ struct TypingStudySessionView: View {
     @State private var hasFailedCurrentCard = false
     @State private var editingCard: Flashcard?
 
+    @FocusState private var isInputFocused: Bool
+
     @State private var lastBackup: FlashcardBackup?
 
     @State private var sessionTime: Double = 0
@@ -83,6 +85,7 @@ struct TypingStudySessionView: View {
 
                         TextField("Wpisz po włosku...", text: $userAnswer)
                             .textFieldStyle(.roundedBorder)
+                            .focused($isInputFocused)
                             .foregroundStyle(showFeedback ? (wasCorrect ? .green : .red) : .primary)
                             .onSubmit { checkAnswer() }
 #if os(iOS)
@@ -188,6 +191,11 @@ struct TypingStudySessionView: View {
             .onReceive(timer) { _ in
                 if currentIndex < cards.count && !showFeedback {
                     sessionTime += 1
+                }
+            }
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    isInputFocused = true
                 }
             }
             .onDisappear {
@@ -303,6 +311,9 @@ struct TypingStudySessionView: View {
                 showFeedback = false
                 hasFailedCurrentCard = false
             }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                isInputFocused = true
+            }
         }
     }
 
@@ -334,6 +345,10 @@ struct TypingStudySessionView: View {
             userAnswer = ""
             showFeedback = false
             hasFailedCurrentCard = false
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            isInputFocused = true
         }
 
         lastBackup = nil
