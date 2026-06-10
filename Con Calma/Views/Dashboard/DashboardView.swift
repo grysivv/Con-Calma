@@ -19,14 +19,8 @@ enum StudyMode: Identifiable {
 struct DashboardView: View {
     @Environment(\.modelContext) private var modelContext
 
-    @Query private var allCards: [Flashcard]
-
-    var dueCards: [Flashcard] {
-        let now = Date()
-        // Pobierz fiszki, których termin minął, ORAZ te, które są trudne (niezależnie od daty)
-        // Ignoruj zawieszone (Leech)
-        return allCards.filter { !$0.isLeech && ($0.nextReviewDate <= now || $0.easeFactor < 1.4) }
-    }
+    @State private var dueCards: [Flashcard] = []
+    @State private var allCardsCount: Int = 0
 
     @AppStorage("dailyGoal") private var dailyGoal: Int = 15
 
@@ -113,7 +107,11 @@ struct DashboardView: View {
                                 .buttonStyle(.borderless)
 
                                 Button(action: {
-                                    studyMode = .match(allCards)
+                                    // Fetch all cards on demand for the quick match game
+                                    let fetchAll = FetchDescriptor<Flashcard>()
+                                    if let fetchedAll = try? modelContext.fetch(fetchAll) {
+                                        studyMode = .match(fetchedAll)
+                                    }
                                 }) {
                                     Text("Szybki")
                                         .font(.subheadline).bold()
@@ -123,7 +121,7 @@ struct DashboardView: View {
                                         .background(Color.purple.opacity(0.15))
                                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                                 }
-                                .disabled(allCards.count < 6)
+                                .disabled(allCardsCount < 6)
                                 .buttonStyle(.borderless)
                             }
                         }
@@ -211,6 +209,21 @@ struct DashboardView: View {
     }
 
     private func calculateStats() {
+        // Fetch due cards optimized: splitting OR into two separate queries to sidestep #Predicate limits
+        let now = Date()
+        let overdueDesc = FetchDescriptor<Flashcard>(predicate: #Predicate { $0.isLeech == false && $0.nextReviewDate <= now })
+        let hardDesc = FetchDescriptor<Flashcard>(predicate: #Predicate { $0.isLeech == false && $0.easeFactor < 1.4 })
+
+        let overdueCards = (try? modelContext.fetch(overdueDesc)) ?? []
+        let hardCards = (try? modelContext.fetch(hardDesc)) ?? []
+
+        // Use Set to uniquely combine the arrays efficiently
+        let combinedSet = Set(overdueCards).union(hardCards)
+        self.dueCards = Array(combinedSet)
+
+        let allCountDesc = FetchDescriptor<Flashcard>()
+        self.allCardsCount = (try? modelContext.fetchCount(allCountDesc)) ?? 0
+
         let todayStr = DateFormatter.yyyyMMdd.string(from: Date())
         let poznaneDescriptor = FetchDescriptor<Flashcard>(predicate: #Predicate { $0.repetitions > 0 })
         poznaneCount = (try? modelContext.fetchCount(poznaneDescriptor)) ?? 0
