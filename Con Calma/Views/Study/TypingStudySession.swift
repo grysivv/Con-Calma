@@ -265,22 +265,14 @@ struct TypingStudySessionView: View {
                 interval: card.interval,
                 easeFactor: card.easeFactor,
                 nextReviewDate: card.nextReviewDate,
-                consecutiveMistakes: card.consecutiveMistakes,
+                lapsesCount: card.lapsesCount,
+                totalReviews: card.totalReviews,
+                successReviews: card.successReviews,
+                isLeech: card.isLeech,
                 activityModified: (quality != .again)
             )
 
-            if quality == .again {
-                card.consecutiveMistakes += 1
-            } else {
-                card.consecutiveMistakes = 0
-            }
-
             SRSAlgorithm.processReview(for: card, quality: quality)
-
-            if card.consecutiveMistakes >= 10 {
-                card.nextReviewDate = Calendar.current.date(byAdding: .day, value: 2, to: Date()) ?? Date()
-                card.consecutiveMistakes = 0 // reset po odroczeniu
-            }
 
             if quality != .again {
                 let todayStr = DateFormatter.yyyyMMdd.string(from: Date())
@@ -327,7 +319,10 @@ struct TypingStudySessionView: View {
         card.interval = backup.interval
         card.easeFactor = backup.easeFactor
         card.nextReviewDate = backup.nextReviewDate
-        card.consecutiveMistakes = backup.consecutiveMistakes
+        card.lapsesCount = backup.lapsesCount
+        card.totalReviews = backup.totalReviews
+        card.successReviews = backup.successReviews
+        card.isLeech = backup.isLeech
 
         if backup.activityModified {
             let todayStr = DateFormatter.yyyyMMdd.string(from: Date())

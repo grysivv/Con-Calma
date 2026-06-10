@@ -24,10 +24,11 @@ struct FreePracticeConfigView: View {
     }
 
     var filteredCards: [Flashcard] {
+        let validCards = allCards.filter { !$0.isLeech }
         if selectedCategory == "Wszystkie" {
-            return allCards
+            return validCards
         } else {
-            return allCards.filter { $0.category == selectedCategory }
+            return validCards.filter { $0.category == selectedCategory }
         }
     }
 

@@ -24,7 +24,8 @@ struct DashboardView: View {
     var dueCards: [Flashcard] {
         let now = Date()
         // Pobierz fiszki, których termin minął, ORAZ te, które są trudne (niezależnie od daty)
-        return allCards.filter { $0.nextReviewDate <= now || $0.easeFactor < 1.4 }
+        // Ignoruj zawieszone (Leech)
+        return allCards.filter { !$0.isLeech && ($0.nextReviewDate <= now || $0.easeFactor < 1.4) }
     }
 
     @AppStorage("dailyGoal") private var dailyGoal: Int = 15

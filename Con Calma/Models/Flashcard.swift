@@ -12,7 +12,10 @@ final class Flashcard {
     var interval: Int = 0
     var easeFactor: Double = 2.5
     var nextReviewDate: Date = Date()
-    var consecutiveMistakes: Int = 0
+    var lapsesCount: Int = 0
+    var totalReviews: Int = 0
+    var successReviews: Int = 0
+    var isLeech: Bool = false
 
     var creationDate: Date = Date()
 
@@ -21,5 +24,15 @@ final class Flashcard {
         self.back = back
         self.example = example
         self.category = category
+    }
+
+    func reviveLeech() {
+        self.isLeech = false
+        self.lapsesCount = 0
+        self.totalReviews = 0
+        self.successReviews = 0
+        self.interval = 1
+        self.easeFactor = 2.0
+        self.nextReviewDate = Date()
     }
 }
