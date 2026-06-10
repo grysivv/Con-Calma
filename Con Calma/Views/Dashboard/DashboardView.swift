@@ -66,7 +66,10 @@ struct DashboardView: View {
                             Image(systemName: "brain.head.profile")
                                 .font(.system(size: 50))
                                 .foregroundColor(.accentColor.opacity(0.8))
+                                .accessibilityHidden(true)
                         }
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("Do powtórki: \(dueCards.count)")
 
                         VStack(spacing: 12) {
                             HStack(spacing: 12) {

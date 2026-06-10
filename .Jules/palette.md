@@ -7,3 +7,6 @@
 ## 2026-06-04 - VoiceOver Grouping for Stat Cards
 **Learning:** Independent stat labels and values are read disjointedly by VoiceOver, causing confusion. SwiftUI generic system icons without labels add noise.
 **Action:** Apply .accessibilityElement(children: .ignore) and a custom .accessibilityLabel("\(title): \(value)") to the parent container to present a unified, semantic VoiceOver element.
+## 2024-05-24 - Inconsistent Screen Reader Semantic Grouping
+**Learning:** An accessibility issue pattern was identified where modularized components (like `StatCard`) have proper cohesive VoiceOver structures, while inline statistical views (like the main "Do powtórki" banner) lack them, leading to fragmented and noisy VoiceOver readouts for critical app sections.
+**Action:** When creating inline compound views with icons and text, always apply `.accessibilityElement(children: .ignore)` and `.accessibilityLabel` to the parent container, and `.accessibilityHidden(true)` to decorative icons, matching the behavior of modular components.
