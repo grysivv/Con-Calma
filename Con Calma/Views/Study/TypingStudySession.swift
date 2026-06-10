@@ -26,6 +26,7 @@ struct TypingStudySessionView: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     @State private var synthesizer = AVSpeechSynthesizer()
+    @FocusState private var isInputFieldFocused: Bool
 
     var progress: Double {
         guard !cards.isEmpty else { return 1.0 }
@@ -83,6 +84,7 @@ struct TypingStudySessionView: View {
 
                         TextField("Wpisz po włosku...", text: $userAnswer)
                             .textFieldStyle(.roundedBorder)
+                            .focused($isInputFieldFocused)
                             .foregroundStyle(showFeedback ? (wasCorrect ? .green : .red) : .primary)
                             .onSubmit { checkAnswer() }
 #if os(iOS)
@@ -188,6 +190,11 @@ struct TypingStudySessionView: View {
             .onReceive(timer) { _ in
                 if currentIndex < cards.count && !showFeedback {
                     sessionTime += 1
+                }
+            }
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    isInputFieldFocused = true
                 }
             }
             .onDisappear {
@@ -303,6 +310,9 @@ struct TypingStudySessionView: View {
                 showFeedback = false
                 hasFailedCurrentCard = false
             }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                isInputFieldFocused = true
+            }
         }
     }
 
@@ -334,6 +344,10 @@ struct TypingStudySessionView: View {
             userAnswer = ""
             showFeedback = false
             hasFailedCurrentCard = false
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            isInputFieldFocused = true
         }
 
         lastBackup = nil
