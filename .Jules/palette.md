@@ -10,3 +10,7 @@
 ## 2026-06-12 - Automatic TextField Focus in Typing Flow
 **Learning:** Requiring manual tap to focus a text input repeatedly in a typing-based flow adds unnecessary friction and interrupts the user's flow.
 **Action:** Use `@FocusState` and `DispatchQueue.main.asyncAfter` to automatically activate the software keyboard on view appearance, item transitions, and undo actions to ensure a seamless typing experience.
+
+## 2026-06-17 - Hiding Decorative Icons from VoiceOver
+**Learning:** Standalone decorative `Image(systemName:)` elements (e.g., visual cues like 'hand.tap.fill' or 'brain.head.profile') are read literally by VoiceOver, causing confusion.
+**Action:** In SwiftUI, always apply `.accessibilityHidden(true)` to these elements to prevent VoiceOver from reading unhelpful literal icon names.

@@ -61,6 +61,7 @@ struct DashboardView: View {
                             Image(systemName: "brain.head.profile")
                                 .font(.system(size: 50))
                                 .foregroundColor(.accentColor.opacity(0.8))
+                                .accessibilityHidden(true)
                         }
 
                         VStack(spacing: 12) {
