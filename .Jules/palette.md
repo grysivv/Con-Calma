@@ -10,3 +10,6 @@
 ## 2026-06-12 - Automatic TextField Focus in Typing Flow
 **Learning:** Requiring manual tap to focus a text input repeatedly in a typing-based flow adds unnecessary friction and interrupts the user's flow.
 **Action:** Use `@FocusState` and `DispatchQueue.main.asyncAfter` to automatically activate the software keyboard on view appearance, item transitions, and undo actions to ensure a seamless typing experience.
+## 2026-06-18 - Ukrycie dekoracyjnych ikon przed VoiceOver
+**Learning:** Dekoracyjne i nieinteraktywne elementy typu `Image(systemName:)` bez powiązanej etykiety są odczytywane przez VoiceOver używając literalnej, mało użytecznej nazwy ikony (np. 'brain.head.profile'), co jest mylące.
+**Action:** Zawsze należy stosować modyfikator `.accessibilityHidden(true)` na takich czysto wizualnych elementach.
