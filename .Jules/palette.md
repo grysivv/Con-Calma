@@ -10,3 +10,6 @@
 ## 2026-06-12 - Automatic TextField Focus in Typing Flow
 **Learning:** Requiring manual tap to focus a text input repeatedly in a typing-based flow adds unnecessary friction and interrupts the user's flow.
 **Action:** Use `@FocusState` and `DispatchQueue.main.asyncAfter` to automatically activate the software keyboard on view appearance, item transitions, and undo actions to ensure a seamless typing experience.
+## 2026-06-15 - VoiceOver Grouping for Dashboard Header
+**Learning:** Independent labels, values, and decorative system icons in complex dashboard headers create disjointed and noisy VoiceOver experiences.
+**Action:** Apply `.accessibilityElement(children: .ignore)` and a custom `.accessibilityLabel` to the parent container, and `.accessibilityHidden(true)` to decorative icons, creating a cohesive semantic element.
