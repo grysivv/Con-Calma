@@ -90,6 +90,7 @@ struct CardFace: View {
             Image(systemName: "hand.tap.fill")
                 .foregroundColor(Color.gray.opacity(0.3))
                 .padding(.bottom, 20)
+                .accessibilityHidden(true)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.secondary.opacity(0.1))
