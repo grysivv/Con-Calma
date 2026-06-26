@@ -13,3 +13,6 @@
 ## 2026-06-25 - VoiceOver reading decorative system icons
 **Learning:** Standalone decorative Image(systemName:) elements (like 'hand.tap.fill' or 'brain.head.profile') are read by VoiceOver as unhelpful literal icon names, which confuses screen reader users.
 **Action:** Apply .accessibilityHidden(true) to standalone decorative system icons to prevent VoiceOver from reading them.
+## 2026-06-26 - Ukrywanie dekoracyjnych ikon stanu sesji
+**Learning:** VoiceOver odczytywał nazwy systemowe ikon (np. 'party.popper.fill', 'checkmark.circle.fill') podczas wyświetlania ekranów końcowych i poprawnych odpowiedzi w sesjach, co zaburzało przepływ i czytelność właściwych komunikatów tekstowych.
+**Action:** Dodanie `.accessibilityHidden(true)` do ikon typu alert/status, które towarzyszą jasnym komunikatom tekstowym.
