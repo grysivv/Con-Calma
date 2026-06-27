@@ -120,6 +120,7 @@ struct StudySessionView: View {
                         Image(systemName: "party.popper.fill")
                             .font(.system(size: 60))
                             .foregroundColor(.accentColor)
+                            .accessibilityHidden(true)
                         Text(isFreePractice ? "Koniec treningu!" : "Koniec na dzisiaj!")
                             .font(.title)
                             .bold()
