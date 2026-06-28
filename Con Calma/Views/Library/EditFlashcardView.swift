@@ -8,6 +8,8 @@ struct EditFlashcardView: View {
     @Bindable var card: Flashcard
     @Query private var allCards: [Flashcard]
 
+    @State private var showingDeleteAlert = false
+
     var isKnown: Bool { card.repetitions > 0 }
 
     var existingCategories: [String] {
@@ -97,14 +99,21 @@ struct EditFlashcardView: View {
                 }
 
                 Section {
-                    Button(role: .destructive, action: deleteCard) {
+                    Button(role: .destructive, action: { showingDeleteAlert = true }) {
                         HStack {
                             Spacer()
                             Text("Usuń fiszkę")
                             Spacer()
                         }
                     }
+                    .accessibilityLabel("Usuń fiszkę, otworzy okno potwierdzenia")
                 }
+            }
+            .alert("Usuń fiszkę", isPresented: $showingDeleteAlert) {
+                Button("Anuluj", role: .cancel) { }
+                Button("Usuń", role: .destructive, action: deleteCard)
+            } message: {
+                Text("Czy na pewno chcesz usunąć tę fiszkę? Tej akcji nie można cofnąć.")
             }
             .navigationTitle("Edycja")
 #if os(iOS)
