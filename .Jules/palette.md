@@ -16,3 +16,6 @@
 ## 2024-05-24 - Ukrywanie dekoracyjnych ikon dla VoiceOver
 **Learning:** Dekoracyjne ikony systemowe (np. 'party.popper.fill') są czytane przez VoiceOver jako ich dosłowna, techniczna nazwa, co dezinformuje użytkownika i tworzy szum.
 **Action:** Zawsze należy stosować .accessibilityHidden(true) dla dekoracyjnych obiektów Image(systemName:), które nie niosą ze sobą unikalnej, dodatkowej informacji.
+## 2024-05-18 - Ukrycie dekoracyjnych ikon w ekranach stanu
+**Learning:** Dekoracyjne ikony systemowe wyświetlane na ekranach stanów (np. "koniec czasu", "sukces"), jeśli nie są ukryte z użyciem `.accessibilityHidden(true)`, są dosłownie odczytywane przez VoiceOver jako nazwy tych ikon (np. "timer", "star fill"). Powoduje to zbędny szum, gdy obok zawsze znajduje się odpowiedni tekst ("Czas minął!").
+**Action:** Zawsze stosować `.accessibilityHidden(true)` dla ikon w ekranach stanu, które pełnią rolę wyłącznie wizualnego ubarwienia dla znajdującego się obok tekstu nagłówkowego.
