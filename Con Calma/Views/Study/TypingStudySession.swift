@@ -68,6 +68,7 @@ struct TypingStudySessionView: View {
                                     Image(systemName: "checkmark.circle.fill")
                                         .font(.system(size: 40))
                                         .foregroundColor(.green)
+                                        .accessibilityHidden(true)
                                     Text(card.front)
                                         .font(.system(size: 34, weight: .bold, design: .rounded))
                                         .foregroundColor(.green)
