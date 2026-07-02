@@ -16,3 +16,6 @@
 ## 2024-05-24 - Ukrywanie dekoracyjnych ikon dla VoiceOver
 **Learning:** Dekoracyjne ikony systemowe (np. 'party.popper.fill') są czytane przez VoiceOver jako ich dosłowna, techniczna nazwa, co dezinformuje użytkownika i tworzy szum.
 **Action:** Zawsze należy stosować .accessibilityHidden(true) dla dekoracyjnych obiektów Image(systemName:), które nie niosą ze sobą unikalnej, dodatkowej informacji.
+## 2024-10-24 - Redundant Visual Cues
+**Learning:** Decorative confirmation icons displayed alongside descriptive text should be hidden to avoid redundant VoiceOver announcements.
+**Action:** Applied .accessibilityHidden(true) to the checkmark icon.
