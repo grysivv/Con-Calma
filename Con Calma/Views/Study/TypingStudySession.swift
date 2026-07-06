@@ -99,7 +99,7 @@ struct TypingStudySessionView: View {
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 12)
                                     .background(Color.secondary.opacity(0.15))
-                                    .foregroundColor(.primary)
+                                    .foregroundColor(showFeedback ? Color.secondary : .primary)
                                     .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
                             .buttonStyle(.plain)
@@ -110,8 +110,8 @@ struct TypingStudySessionView: View {
                                     .fontWeight(.bold)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 12)
-                                    .background(Color.primary)
-                                    .foregroundColor(.white)
+                                    .background((showFeedback || userAnswer.trimmingCharacters(in: .whitespaces).isEmpty) ? Color.secondary.opacity(0.3) : Color.primary)
+                                    .foregroundColor((showFeedback || userAnswer.trimmingCharacters(in: .whitespaces).isEmpty) ? Color.secondary : .white)
                                     .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
                             .buttonStyle(.plain)
