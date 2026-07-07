@@ -93,29 +93,31 @@ struct TypingStudySessionView: View {
 #endif
 
                         HStack(spacing: 12) {
+                            let isSkipDisabled = showFeedback
                             Button(action: { submit(answerIsCorrect: false, skipForceTyping: true) }) {
                                 Text("Pomiń")
                                     .fontWeight(.medium)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 12)
-                                    .background(Color.secondary.opacity(0.15))
-                                    .foregroundColor(.primary)
+                                    .background(Color.secondary.opacity(isSkipDisabled ? 0.05 : 0.15))
+                                    .foregroundColor(isSkipDisabled ? Color.primary.opacity(0.3) : .primary)
                                     .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
                             .buttonStyle(.plain)
-                            .disabled(showFeedback)
+                            .disabled(isSkipDisabled)
 
+                            let isCheckDisabled = showFeedback || userAnswer.trimmingCharacters(in: .whitespaces).isEmpty
                             Button(action: { checkAnswer() }) {
                                 Text("Sprawdź")
                                     .fontWeight(.bold)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 12)
-                                    .background(Color.primary)
-                                    .foregroundColor(.white)
+                                    .background(isCheckDisabled ? Color.secondary.opacity(0.2) : Color.primary)
+                                    .foregroundColor(isCheckDisabled ? Color.primary.opacity(0.4) : .white)
                                     .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
                             .buttonStyle(.plain)
-                            .disabled(showFeedback || userAnswer.trimmingCharacters(in: .whitespaces).isEmpty)
+                            .disabled(isCheckDisabled)
                         }
                     }
                     .padding(.horizontal, 24)
