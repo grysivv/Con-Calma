@@ -16,3 +16,6 @@
 ## 2024-05-24 - Ukrywanie dekoracyjnych ikon dla VoiceOver
 **Learning:** Dekoracyjne ikony systemowe (np. 'party.popper.fill') są czytane przez VoiceOver jako ich dosłowna, techniczna nazwa, co dezinformuje użytkownika i tworzy szum.
 **Action:** Zawsze należy stosować .accessibilityHidden(true) dla dekoracyjnych obiektów Image(systemName:), które nie niosą ze sobą unikalnej, dodatkowej informacji.
+## 2026-07-11 - Explicit Disabled State Colors
+**Learning:** In SwiftUI, the default .disabled() modifier often fails to provide sufficient visual contrast for custom buttons.
+**Action:** Always use explicit ternary color logic (e.g., condition ? .secondary : .primary) for text and backgrounds on custom buttons to ensure clear, accessible disabled states.
