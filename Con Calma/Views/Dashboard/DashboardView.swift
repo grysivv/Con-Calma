@@ -85,10 +85,10 @@ struct DashboardView: View {
                                 }) {
                                     Text("Wpisywanie")
                                         .font(.subheadline).bold()
-                                        .foregroundColor(.primary)
+                                        .foregroundColor(dueCards.isEmpty ? .secondary : .primary)
                                         .frame(maxWidth: .infinity)
                                         .padding(.vertical, 16)
-                                        .background(Color.orange.opacity(0.15))
+                                        .background(dueCards.isEmpty ? Color.gray.opacity(0.3) : Color.orange.opacity(0.15))
                                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                                 }
                                 .disabled(dueCards.isEmpty)
@@ -116,10 +116,10 @@ struct DashboardView: View {
                                 }) {
                                     Text("Szybki")
                                         .font(.subheadline).bold()
-                                        .foregroundColor(.purple)
+                                        .foregroundColor(allCardsCount < 6 ? .secondary : .purple)
                                         .frame(maxWidth: .infinity)
                                         .padding(.vertical, 16)
-                                        .background(Color.purple.opacity(0.15))
+                                        .background(allCardsCount < 6 ? Color.gray.opacity(0.3) : Color.purple.opacity(0.15))
                                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                                 }
                                 .disabled(allCardsCount < 6)
