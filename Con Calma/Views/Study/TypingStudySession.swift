@@ -68,6 +68,7 @@ struct TypingStudySessionView: View {
                                     Image(systemName: "checkmark.circle.fill")
                                         .font(.system(size: 40))
                                         .foregroundColor(.green)
+                                        .accessibilityHidden(true)
                                     Text(card.front)
                                         .font(.system(size: 34, weight: .bold, design: .rounded))
                                         .foregroundColor(.green)
@@ -92,14 +93,15 @@ struct TypingStudySessionView: View {
                             .autocorrectionDisabled(true)
 #endif
 
+                        let isCheckDisabled = showFeedback || userAnswer.trimmingCharacters(in: .whitespaces).isEmpty
                         HStack(spacing: 12) {
                             Button(action: { submit(answerIsCorrect: false, skipForceTyping: true) }) {
                                 Text("Pomiń")
                                     .fontWeight(.medium)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 12)
-                                    .background(Color.secondary.opacity(0.15))
-                                    .foregroundColor(.primary)
+                                    .background(Color.secondary.opacity(showFeedback ? 0.05 : 0.15))
+                                    .foregroundColor(showFeedback ? Color.secondary.opacity(0.5) : .primary)
                                     .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
                             .buttonStyle(.plain)
@@ -110,12 +112,12 @@ struct TypingStudySessionView: View {
                                     .fontWeight(.bold)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 12)
-                                    .background(Color.primary)
-                                    .foregroundColor(.white)
+                                    .background(isCheckDisabled ? Color.secondary.opacity(0.3) : Color.primary)
+                                    .foregroundColor(isCheckDisabled ? Color.secondary : .white)
                                     .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
                             .buttonStyle(.plain)
-                            .disabled(showFeedback || userAnswer.trimmingCharacters(in: .whitespaces).isEmpty)
+                            .disabled(isCheckDisabled)
                         }
                     }
                     .padding(.horizontal, 24)
